@@ -40,8 +40,8 @@ def precook(s, n=4, out=False):
   """
   words = s.split()
   counts = defaultdict(int)
-  for k in xrange(1,n+1):
-    for i in xrange(len(words)-k+1):
+  for k in range(1,n+1):
+    for i in range(len(words)-k+1):
       ngram = tuple(words[i:i+k])
       counts[ngram] += 1
   return counts
@@ -73,7 +73,7 @@ def compute_doc_freq(crefs):
   document_frequency = defaultdict(float)
   for refs in crefs:
     # refs, k ref captions of one image
-    for ngram in set([ngram for ref in refs for (ngram,count) in ref.iteritems()]):
+    for ngram in set([ngram for ref in refs for (ngram,count) in ref.items()]):
       document_frequency[ngram] += 1
       # maxcounts[ngram] = max(maxcounts.get(ngram,0), count)
   return document_frequency
@@ -96,7 +96,7 @@ def build_dict(imgs, wtoi, params):
         tmp_tokens = sent['tokens'] + ['<eos>']
         tmp_tokens = [_ if _ in wtoi else u'\u534d' for _ in tmp_tokens]
         ref_words.append(' '.join(tmp_tokens))
-        ref_idxs.append(' '.join([unicode(wtoi[_]) for _ in tmp_tokens]))
+        ref_idxs.append(' '.join([str(wtoi[_]) for _ in tmp_tokens]))
       refs_words.append(ref_words)
       refs_idxs.append(ref_idxs)
       count_imgs += 1
@@ -116,8 +116,8 @@ def main(params):
 
   ngram_words, ngram_idxs, ref_len = build_dict(imgs, wtoi, params)
 
-  cPickle.dump({'document_frequency': ngram_words, 'ref_len': ref_len}, open(params['output_pkl']+'-words.p','w'), protocol=cPickle.HIGHEST_PROTOCOL)
-  cPickle.dump({'document_frequency': ngram_idxs, 'ref_len': ref_len}, open(params['output_pkl']+'-idxs.p','w'), protocol=cPickle.HIGHEST_PROTOCOL)
+  cPickle.dump({'document_frequency': ngram_words, 'ref_len': ref_len}, open(params['output_pkl']+'-words.p','wb'), protocol=cPickle.HIGHEST_PROTOCOL)
+  cPickle.dump({'document_frequency': ngram_idxs, 'ref_len': ref_len}, open(params['output_pkl']+'-idxs.p','wb'), protocol=cPickle.HIGHEST_PROTOCOL)
 
 if __name__ == "__main__":
 

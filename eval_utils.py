@@ -19,7 +19,7 @@ import misc.utils as utils
 def language_eval(dataset, preds, model_id, split):
     import sys
     sys.path.append("AI_Challenger/Evaluation/caption_eval")
-    annFile = 'data/eval_reference_new.json'
+    annFile = '/home/jovyan/ai_challenger/Image_Captioning_AI_Challenger/data/eval_reference.json'
     from coco_caption.pycxtools.coco import COCO
     from coco_caption.pycxevalcap.eval import COCOEvalCap
 
@@ -109,7 +109,8 @@ def eval_split(model, crit, loader, eval_kwargs={}):
 
         for k, sent in enumerate(sents):
             if verbose:
-                print('image %s: ' %(data['infos'][k]['id']), sent.encode('utf8', 'replace'))
+#                print('image %s: ' %(data['infos'][k]['id']), sent.encode('utf8', 'replace'))
+                print('image %s: ' %(data['infos'][k]['id']), str(sent))                
             entry = {'image_id': data['infos'][k]['id'], 'caption': sent}
             if eval_kwargs.get('dump_path', 0) == 1:
                 entry['file_name'] = data['infos'][k]['file_path']

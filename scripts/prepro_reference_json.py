@@ -43,7 +43,7 @@ def main(params):
   for k in imgs.keys():
     for img in imgs[k]:
       img['filename'] = img['image_id'] # k+'/'+img['image_id']
-      img['image_id'] = int(int(hashlib.sha256(img['image_id']).hexdigest(), 16) % sys.maxint)
+      img['image_id'] = int(int(hashlib.sha256(img['image_id'].encode("utf8")).hexdigest(), 16) % sys.maxsize)
       tmp.append(img)
   imgs = tmp
 

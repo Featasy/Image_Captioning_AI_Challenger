@@ -11,13 +11,15 @@ import numpy as np
 
 import time
 import os
-from six.moves import cPickle
+#from six.moves import cPickle
+import pickle
 
 import opts
 import models
 from dataloader import *
 import eval_utils
 import misc.utils as utils
+import functools
 from misc.rewards import init_scorer, get_self_critical_reward
 
 try:
@@ -45,16 +47,18 @@ def train(opt):
     histories = {}
     if opt.start_from is not None:
         # open old infos and check if models are compatible
-        with open(os.path.join(opt.start_from, 'infos_'+opt.id+'.pkl')) as f:
-            infos = cPickle.load(f)
+        with open(os.path.join(opt.start_from, 'infos_'+opt.id+'.pkl'),  "rb") as f:
+            #infos = cPickle.load(f)
+            infos = pickle.load(f,  encoding='iso-8859-1')
             saved_model_opt = infos['opt']
             need_be_same=["caption_model", "rnn_type", "rnn_size", "num_layers"]
             for checkme in need_be_same:
                 assert vars(saved_model_opt)[checkme] == vars(opt)[checkme], "Command line argument and saved model disagree on '%s' " % checkme
 
         if os.path.isfile(os.path.join(opt.start_from, 'histories_'+opt.id+'.pkl')):
-            with open(os.path.join(opt.start_from, 'histories_'+opt.id+'.pkl')) as f:
-                histories = cPickle.load(f)
+            with open(os.path.join(opt.start_from, 'histories_'+opt.id+'.pkl'),  "rb") as f:
+                #histories = cPickle.load(f)
+                histories = pickle.load(f,  encoding='iso-8859-1')
 
     iteration = infos.get('iter', 0)
     epoch = infos.get('epoch', 0)
@@ -209,19 +213,19 @@ def train(opt):
                 histories['lr_history'] = lr_history
                 histories['ss_prob_history'] = ss_prob_history
                 with open(os.path.join(opt.checkpoint_path, 'infos_'+opt.id+'.pkl'), 'wb') as f:
-                    cPickle.dump(infos, f)
+                    pickle.dump(infos, f)
                 with open(os.path.join(opt.checkpoint_path, 'histories_'+opt.id+'.pkl'), 'wb') as f:
-                    cPickle.dump(histories, f)
+                    pickle.dump(histories, f)
 
                 if best_flag:
                     checkpoint_path = os.path.join(opt.checkpoint_path, 'model-best.pth')
                     torch.save(model.state_dict(), checkpoint_path)
                     print("model saved to {}".format(checkpoint_path))
                     with open(os.path.join(opt.checkpoint_path, 'infos_'+opt.id+'-best.pkl'), 'wb') as f:
-                        cPickle.dump(infos, f)
+                        pickle.dump(infos, f)
 
         # Stop if reaching max epochs
-        if epoch >= opt.max_epochs and opt.max_epochs != -1:
+        if(epoch >= opt.max_epochs and opt.max_epochs != -1):
             break
 
 opt = opts.parse_opt()

@@ -8,6 +8,7 @@ import numpy as np
 import time
 import os
 from six.moves import cPickle
+import pickle
 
 import opts
 import models
@@ -87,14 +88,14 @@ parser.add_argument('--verbose_loss', type=int, default=0,
 opt = parser.parse_args()
 
 # Load infos
-with open(opt.infos_path) as f:
-    infos = cPickle.load(f)
+with open(opt.infos_path,'rb') as f:
+    infos = pickle.load(f)
 
 # override and collect parameters
 if len(opt.input_fc_dir) == 0:
     opt.input_fc_dir = infos['opt'].input_fc_dir
     opt.input_att_dir = infos['opt'].input_att_dir
-    opt.input_att_dir = infos['opt'].input_box_dir
+    opt.input_box_dir = infos['opt'].input_box_dir
     opt.input_label_h5 = infos['opt'].input_label_h5
 if len(opt.input_json) == 0:
     opt.input_json = infos['opt'].input_json
@@ -103,6 +104,12 @@ if opt.batch_size == 0:
 if len(opt.id) == 0:
     opt.id = infos['opt'].id
 ignore = ["id", "batch_size", "beam_size", "start_from", "language_eval"]
+opt.input_label_h5 = infos['opt'].input_label_h5
+print(opt.input_label_h5)
+print(opt.input_fc_dir)
+print(opt.input_att_dir)
+print(opt.input_box_dir)
+
 for k in vars(infos['opt']).keys():
     if k not in ignore:
         if k in vars(opt):
@@ -121,9 +128,9 @@ crit = utils.LanguageModelCriterion()
 
 # Create the Data Loader instance
 if len(opt.image_folder) == 0:
-  loader = DataLoader(opt)
+    loader = DataLoader(opt)
 else:
-  loader = DataLoaderRaw({'folder_path': opt.image_folder, 
+    loader = DataLoaderRaw({'folder_path': opt.image_folder, 
                             'coco_json': opt.coco_json,
                             'batch_size': opt.batch_size,
                             'cnn_model': opt.cnn_model})
@@ -138,7 +145,7 @@ loss, split_predictions, lang_stats = eval_utils.eval_split(model, crit, loader,
 
 print('loss: ', loss)
 if lang_stats:
-  print(lang_stats)
+    print(lang_stats)
 
 if opt.dump_json == 1:
     # dump the json
